@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CreativeEditor, { useConfig, useConfigure } from './lib/CreativeEditor';
+
 
 // We have just received the following email from a customer.
 // Please compose a response for this particular customer.
@@ -11,6 +12,7 @@ import CreativeEditor, { useConfig, useConfigure } from './lib/CreativeEditor';
 
 const CaseComponent = () => {
   const [image, setImage] = useState();
+  const [instance, setInstance] = useState(null);
 
   const config = useConfig(
     () => ({
@@ -43,14 +45,15 @@ const CaseComponent = () => {
   const configure = useConfigure(async (instance) => {
     await instance.addDefaultAssetSources();
     await instance.addDemoAssetSources({ sceneMode: 'Design' });
+    setInstance(instance);
+  }, []);
 
-    // Update the editor's image when the state changes
-    if (image) {
-      await instance.scene.clear();
-      await instance.scene.loadFromURL(image.full);
+  useEffect(() => {
+    if (image && instance) {
+      instance.scene.clear();
+      instance.scene.loadFromURL(image.full);
     }
-  }, [image]);
-
+  }, [image, instance]);
   return (
     <div className="gap-sm flex h-full w-full flex-row">
       <div style={selectImageWrapper}>
