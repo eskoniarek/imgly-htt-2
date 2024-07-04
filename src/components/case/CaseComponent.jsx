@@ -43,7 +43,13 @@ const CaseComponent = () => {
   const configure = useConfigure(async (instance) => {
     await instance.addDefaultAssetSources();
     await instance.addDemoAssetSources({ sceneMode: 'Design' });
-  }, []);
+
+    // Update the editor's image when the state changes
+    if (image) {
+      await instance.scene.clear();
+      await instance.scene.loadFromURL(image.full);
+    }
+  }, [image]);
 
   return (
     <div className="gap-sm flex h-full w-full flex-row">
@@ -74,15 +80,12 @@ const CaseComponent = () => {
           ))}
         </div>
       </div>
-
       <div style={cesdkWrapperStyle}>
-        {image && (
-          <CreativeEditor
-            style={cesdkStyle}
-            config={config}
-            configure={configure}
-          />
-        )}
+        <CreativeEditor
+          style={cesdkStyle}
+          config={config}
+          configure={configure}
+        />
       </div>
     </div>
   );
